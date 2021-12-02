@@ -1,0 +1,44 @@
+/* canvasRuler最外层容器 */
+.canvas-ruler-wrapper .canvas-ruler-wrapper {
+    position: absolute;
+}
+
+.canvas-ruler-wrapper .canvas-ruler-h-box,
+.canvas-ruler-wrapper .canvas-ruler-v-box {
+    position: absolute;
+}
+
+.canvas-ruler-wrapper .canvas-ruler-h-box {
+    top: 0;
+}
+
+.canvas-ruler-wrapper .canvas-ruler-v-box {
+    left: 0;
+}
+
+.canvas-ruler-wrapper .canvas-ruler-y,
+.canvas-ruler-wrapper .canvas-ruler-x {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+}
+
+.canvas-ruler-wrapper .canvas-content-wrapper {
+    position: absolute;
+    overflow: auto;
+}
+
+.canvas-ruler-wrapper .canvas-ruler-unit {
+    position: absolute;
+    left: 0;
+    top: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.canvas-ruler-wrapper .canvas-ruler-box {
+    will-change: transform;
+}
