@@ -1,6 +1,6 @@
 {
-    "name": "CanvasRuler",
-    "version": "1.0.0",
+    "name": "lightRuler",
+    "version": "1.0.3",
     "description": "a web ruler component made by canvas and typescript",
     "main": "index.js",
     "scripts": {
@@ -11,17 +11,17 @@
     },
     "repository": {
         "type": "git",
-        "url": "git+https://github.com/gxy5202/CanvasRuler.git"
+        "url": "git+https://github.com/gxy5202/light-ruler.git"
     },
     "keywords": [],
     "author": "",
-    "license": "ISC",
+    "license": "MIT",
     "bugs": {
-        "url": "https://github.com/gxy5202/CanvasRuler/issues"
+        "url": "https://github.com/gxy5202/light-ruler/issues"
     },
-    "homepage": "https://github.com/gxy5202/CanvasRuler#readme",
+    "homepage": "https://github.com/gxy5202/light-ruler#readme",
     "dependencies": {
-        "easy-ruler": "^1.0.15",
+        "light-ruler": "^1.0.3",
         "typescript": "^4.5.2",
         "vite": "^2.6.14"
     }

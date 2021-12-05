@@ -3,8 +3,7 @@
  * @Author: Gouxinyu
  * @Date: 2020-12-23 11:14:11
  */
-import CanvasRuler from "easy-ruler";
-import "../src/components/canvasRuler.css";
+import LightRuler from "light-ruler";
 
 const options = {
     mode: "translate",
@@ -19,10 +18,10 @@ const options = {
     },
 };
 
-(window as any).ruler = new CanvasRuler(options);
+(window as any).ruler = new LightRuler(options);
 
-// (window as any).ruler = CanvasRulerController.rulerMap[CanvasRulerController.currentRulerId];
-// let ruler = new CanvasRuler('box', options);
+// (window as any).ruler = LightRulerController.rulerMap[LightRulerController.currentRulerId];
+// let ruler = new LightRuler('box', options);
 
 // 修改数值
 const input: HTMLInputElement = <HTMLInputElement>(
