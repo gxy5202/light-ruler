@@ -1,10 +1,10 @@
-# easy-ruer
+# light-ruler
 
-[![oByAH0.png](https://s4.ax1x.com/2021/12/05/oByAH0.png)](https://imgtu.com/i/oByAH0)
+[![oBz0Qe.png](https://s4.ax1x.com/2021/12/05/oBz0Qe.png)](https://imgtu.com/i/oBz0Qe)
 
 ![](https://img.shields.io/github/stars/gxy5202/CanvasRuler) ![](https://img.shields.io/github/package-json/v/gxy5202/CanvasRuler) ![](https://img.shields.io/github/v/release/gxy5202/CanvasRuler?display_name=tag&include_prereleases&sort=semver)
 
-[DEMO](https://www.gomi.site/#/EasyRuler "DEMO") / [Github](https://github.com/gxy5202/easy-ruler "Github")
+[DEMO](https://www.gomi.site/#/LightRuler "DEMO") / [Github](https://github.com/gxy5202/light-ruler "Github")
 
 ### 主要特性(Features)
 
@@ -20,7 +20,7 @@
 
 ---
 
-`npm i easy-ruler`
+`npm i light-ruler`
 
 ### 使用(Useage)
 
@@ -29,9 +29,9 @@
 -   基本使用
 
 ```javascript
-import EasyRuler from "easy-ruler";
+import LightRuler from "light-ruler";
 
-const ruler = new EasyRuler({
+const ruler = new LightRuler({
     mode: "infinite",
     wrapperElement: document.getElementById("box"),
     scrollElement: document.getElementById("wrap"),
@@ -51,13 +51,13 @@ const ruler = new EasyRuler({
 
 ```javascript
 import React, { useRef, useEffect } from "react";
-import EasyRuler from "easy-ruler";
+import LightRuler from "light-ruler";
 
 export default function () {
     const rulerRef = useRef(null);
 
     useEffect(() => {
-        const ruler = new EasyRuler({
+        const ruler = new LightRuler({
             mode: "infinite",
             mountRef: rulerRef.current,
             scrollElement: document.getElementById("wrap"),
@@ -100,7 +100,7 @@ export default function () {
 </template>
 
 <script lang="ts">
-import EasyRuler from 'easy-ruler';
+import LightRuler from 'light-ruler';
 import { onMounted, ref, defineComponent } from "vue";
 
 export default defineComponent({
@@ -109,7 +109,7 @@ export default defineComponent({
 	setup: () => {
 		const ruler = ref(null);
 		onMounted(() => {
-			const myRuler = new EasyRuler({
+			const myRuler = new LightRuler({
 				mountRef: ruler.value,
 				mode: "infinite",
 				scrollElement: "#s",
