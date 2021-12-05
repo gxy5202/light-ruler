@@ -5,9 +5,9 @@
  */
 export default function (target: HTMLElement | string, type: string): string {
     if (typeof target === "string" && window.getComputedStyle) {
-        const dom: HTMLElement = document.getElementById(target) as HTMLElement;
+        const dom: HTMLElement = document.querySelector(target) as HTMLElement;
         const style: CSSStyleDeclaration = window.getComputedStyle(dom, null);
-        return style[type];
+        return (style as any)[type];
     }
 
     if ((target as HTMLElement) && window.getComputedStyle) {
@@ -15,7 +15,7 @@ export default function (target: HTMLElement | string, type: string): string {
             target as HTMLElement,
             null
         );
-        return style[type];
+        return (style as any)[type];
     }
 
     throw new Error("Can not get target style");

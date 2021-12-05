@@ -52,13 +52,9 @@ export default class ScreenCanvasRuler extends CanvasRulerBase {
      * @param {any} styleObject
      * @Date: 2021-01-11 20:52:53
      */
-    public resize(styleObject: RulerOuterStyle): void {
+    public resize(styleObject: Required<RulerOuterStyle>): void {
         this.style = styleObject;
-        const {
-            size,
-            width,
-            height,
-        }: { size: number; width: number; height: number } = styleObject;
+        const { size, width, height } = styleObject;
         this.canvasX.width = width;
         this.canvasX.height = size;
 

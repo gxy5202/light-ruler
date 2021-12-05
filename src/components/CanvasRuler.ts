@@ -19,6 +19,7 @@ import {
     OVER_SIZE,
     DEFAULT_WIDTH,
     DEFAULT_HEIGHT,
+    RULER_STYLE,
 } from "./consts";
 
 import getComputedStyle from "../utils/getComputedStyle";
@@ -27,7 +28,7 @@ import ScreenCanvasRuler from "./ScreenCanvasRuler";
 import CanvasRulerBase from "./CanvasRulerBase";
 import { events } from "../utils/events";
 import throwCustomError from "../utils/CustomError";
-import "./canvasRuler.css";
+import "./canvasRuler.css?url";
 
 /**
  * @description: ruler类
@@ -36,8 +37,6 @@ import "./canvasRuler.css";
  * @Date: 2020-12-23 13:47:14
  */
 export default class CanvasRuler {
-    private wrapperId!: string; // 包裹容器id
-
     private wrapperSize!: WrapperSize; // 容器大小
 
     private scrollObject!: HTMLElement; // 监听滚动DOM
@@ -48,7 +47,7 @@ export default class CanvasRuler {
 
     private unitDom!: HTMLElement; // 单位元素
 
-    public options!: Ruler; // 标尺配置项
+    public options!: Required<Ruler>; // 标尺配置项
 
     public canvas!: ScreenCanvasRuler; // canvas标尺实例 主线程canvas
 
@@ -60,12 +59,13 @@ export default class CanvasRuler {
 
     public isInfinite = false; // 是否无限算法
 
-    constructor(wrapId: string, options: Ruler) {
-        if (!wrapId) {
-            throwCustomError("wrapper id is null");
+    constructor(options: Ruler) {
+        if (!options.wrapperElement && !options.mountRef) {
+            throwCustomError("wrapper element or options.mountRef is null!");
         }
+
         // 初始化DOM元素
-        this.init(wrapId, options);
+        this.init(options);
         // 开始渲染
         this.render();
         // 创建canvas标尺内容
@@ -77,58 +77,59 @@ export default class CanvasRuler {
     /**
      * @description: 初始化实例相关配置
      * @Author: Gouxinyu
-     * @param {wrapperId} wrapperId
      * @param {rulerObject} options
      * @Date: 2021-01-11 17:56:35
      */
-    public init(wrapId: string, options: Ruler): void {
-        // 需要插入标尺的容器id
-        this.wrapperId = wrapId;
-
+    public init(options: Ruler): void {
         // 容器大小
-        this.setWrapperSize();
+        this.setWrapperSize(options);
 
-        const { style } = options;
+        const style = options.style as Required<RulerOuterStyle>;
 
         // 配置项
         this.options = {
+            mountRef: options.mountRef,
+            wrapperElement: options.wrapperElement,
             mode: options.mode || "auto",
             type: options.type || "wrapped",
             direction: options.direction || "horizontal",
-            contentWidth: options.contentWidth || DEFAULT_WIDTH,
-            contentHeight: options.contentHeight || DEFAULT_HEIGHT,
-            scrollSelector: options.scrollSelector || "",
-            rulerId: options.rulerId || "",
-            style: {
-                size:
-                    style.size && style.size > MAX_SIZE
-                        ? MAX_SIZE
-                        : style.size || 20, // 标尺宽度: 横向标尺和纵向标尺相同
-                backgroundColor: style.backgroundColor || "#171819",
-                fontColor: style.fontColor || "#fff",
-                fontSize: style.fontSize,
-                fontWeight: style.fontWeight || "",
-                tickColor: style.tickColor || "#4b4d4f",
-                unit: {
-                    backgroundColor: "#171819",
-                    fontColor: "#fff",
-                    fontSize: 12,
-                    text: "px",
-                    ...(style.unit ? style.unit : {}),
-                },
-                gap: style.gap || 10,
-                maxSize: style.maxSize || MAX_SIZE,
-                maxWidth: style.maxWidth || MAX_ROTIO,
-                maxHeight: style.maxHeight || MAX_ROTIO,
-                scale: style.scale || 1,
-                show: style.show || true,
-                mode: style.mode || "center",
-            },
+            width: options.width || DEFAULT_WIDTH,
+            height: options.height || DEFAULT_HEIGHT,
+            scrollElement: options.scrollElement || "",
+            rulerId: options.rulerId || "easy-canvas-ruler",
+            style: style
+                ? ({
+                      size: style.size
+                          ? style.size > MAX_SIZE
+                              ? MAX_SIZE
+                              : style.size
+                          : 20, // 标尺宽度: 横向标尺和纵向标尺相同
+                      backgroundColor: style.backgroundColor || "#171819",
+                      fontColor: style.fontColor || "#fff",
+                      fontSize: style.fontSize,
+                      fontWeight: style.fontWeight || "",
+                      tickColor: style.tickColor || "#4b4d4f",
+                      unit: {
+                          backgroundColor: "#171819",
+                          fontColor: "#fff",
+                          fontSize: 12,
+                          text: "px",
+                          ...(style.unit ? style.unit : {}),
+                      },
+                      gap: style.gap || 10,
+                      maxSize: style.maxSize || MAX_SIZE,
+                      maxWidth: style.maxWidth || MAX_ROTIO,
+                      maxHeight: style.maxHeight || MAX_ROTIO,
+                      scale: style.scale || 1,
+                      show: style.show || true,
+                      mode: style.mode || "center",
+                  } as Required<RulerOuterStyle>)
+                : RULER_STYLE,
             onScroll: options.onScroll || null,
-        } as Ruler;
+        } as Required<Ruler>;
 
         // 当前分辨率
-        this.ratio = [this.options.contentWidth!, this.options.contentHeight!];
+        this.ratio = [this.options.width!, this.options.height!];
 
         if (
             ((this.ratio[0] > MAX_ROTIO || this.ratio[1] > MAX_ROTIO) &&
@@ -161,10 +162,14 @@ export default class CanvasRuler {
      * @param {*}
      * @Date: 2021-01-18 20:43:06
      */
-    public setWrapperSize(): void {
+    public setWrapperSize(options: Ruler): void {
+        const wrapperEl = options.mountRef
+            ? options.mountRef.parentElement
+            : options.wrapperElement;
+
         this.wrapperSize = {
-            width: parseFloat(getComputedStyle(this.wrapperId, "width")),
-            height: parseFloat(getComputedStyle(this.wrapperId, "height")),
+            width: parseFloat(getComputedStyle(wrapperEl, "width")),
+            height: parseFloat(getComputedStyle(wrapperEl, "height")),
         };
     }
 
@@ -176,16 +181,17 @@ export default class CanvasRuler {
      */
     public createWrappedRuler(): void {
         const styleObject = {
-            wrapperId: this.wrapperId, // 容器id
+            ...this.options.style,
+            mountRef: this.options.mountRef,
+            wrapperElement: this.options.wrapperElement,
             width: this.isInfinite
                 ? this.wrapperSize.width + OVER_SIZE
-                : this.options.contentWidth! + OVER_SIZE, // 画布宽
+                : this.options.width! + OVER_SIZE, // 画布宽
             height: this.isInfinite
                 ? this.wrapperSize.height + OVER_SIZE
-                : this.options.contentWidth! + OVER_SIZE, // 画布高
+                : this.options.width! + OVER_SIZE, // 画布高
             rulerId: this.options.rulerId,
-            ...this.options.style,
-        };
+        } as Required<RulerOuterStyle>;
 
         renderDom(styleObject);
     }
@@ -256,7 +262,7 @@ export default class CanvasRuler {
         // 若分辨率超过canvas绘制阈值
         if (width > MAX_ROTIO || height > MAX_ROTIO) {
             this.isInfinite = true;
-            this.setWrapperSize();
+            this.setWrapperSize(this.options);
             this.ratio = [width, height];
 
             this.canvasXbox.style.transform = "translateX(0px)";
@@ -283,7 +289,6 @@ export default class CanvasRuler {
         }
 
         const styleObject = {
-            wrapperId: this.wrapperId, // 容器id
             rulerId: this.options.rulerId,
             width: this.isInfinite
                 ? wrapperWidth + OVER_SIZE
@@ -293,7 +298,7 @@ export default class CanvasRuler {
                 : height + OVER_SIZE,
             isInfinite: this.isInfinite,
             ...this.options.style,
-        };
+        } as Required<RulerOuterStyle>;
 
         this.canvasXbox.style.width = `${styleObject.width}px`;
         this.canvasYbox.style.height = `${styleObject.height}px`;
@@ -308,7 +313,7 @@ export default class CanvasRuler {
         this.options.style.size = size;
         this.canvas.resize(styleObject);
         this.updateUnitStyle();
-        // this.changeScrollObject(this.options.scrollSelector);
+        // this.changeScrollElement(this.options.scrollElement);
         return this;
     }
 
@@ -367,7 +372,7 @@ export default class CanvasRuler {
 
         // 清空dom
         const cavasBox: HTMLElement = document.getElementById(
-            `canvas-ruler-wrapper${this.options.rulerId}`
+            `canvas-ruler-wrapper-${this.options.rulerId}`
         ) as HTMLElement;
         cavasBox.innerHTML = "";
         cavasBox.remove();
@@ -439,19 +444,22 @@ export default class CanvasRuler {
      */
     public getEventNeedsDom(): void {
         this.canvasWrapper = document.getElementById(
-            `canvas-ruler-wrapper${this.options.rulerId}`
+            `canvas-ruler-wrapper-${this.options.rulerId}`
         ) as HTMLElement;
-        this.scrollObject = document.querySelector(
-            this.options.scrollSelector
-        ) as HTMLElement;
+        this.scrollObject =
+            typeof this.options.scrollElement === "string"
+                ? (document.querySelector(
+                      this.options.scrollElement
+                  ) as HTMLElement)
+                : this.options.scrollElement;
         this.canvasXbox = document.getElementById(
-            `canvas-ruler-h-box${this.options.rulerId}`
+            `canvas-ruler-h-box-${this.options.rulerId}`
         ) as HTMLElement;
         this.canvasYbox = document.getElementById(
-            `canvas-ruler-v-box${this.options.rulerId}`
+            `canvas-ruler-v-box-${this.options.rulerId}`
         ) as HTMLElement;
         this.unitDom = document.getElementById(
-            `canvas-ruler-unit${this.options.rulerId}`
+            `canvas-ruler-unit-${this.options.rulerId}`
         ) as HTMLElement;
     }
 
@@ -461,10 +469,13 @@ export default class CanvasRuler {
      * @param {*}
      * @Date: 2021-01-11 17:55:31
      */
-    public changeScrollObject(scrollSelector: string): CanvasRuler | never {
-        const dom: HTMLElement = document.querySelector(
-            scrollSelector
-        ) as HTMLElement;
+    public changeScrollElement(
+        scrollElement: string | HTMLElement
+    ): CanvasRuler | never {
+        const dom =
+            typeof scrollElement === "string"
+                ? (document.querySelector(scrollElement) as HTMLElement)
+                : scrollElement;
         if (dom) {
             // 解绑事件
             this.isInfinite
@@ -479,13 +490,13 @@ export default class CanvasRuler {
                       this.infiniteScrollEvent
                   );
 
-            this.options.scrollSelector = scrollSelector;
+            this.options.scrollElement = scrollElement;
             this.scrollObject = dom;
             // 重新绑定事件
             this.bindScrollEvent();
         } else {
             throwCustomError(
-                `can not find the scrollObject by selector ${scrollSelector}`
+                `can not find the scroll element ${scrollElement}`
             );
         }
         return this;

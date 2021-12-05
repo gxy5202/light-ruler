@@ -3,25 +3,23 @@
  * @Author: Gouxinyu
  * @Date: 2020-12-23 11:14:11
  */
-import CanvasRuler from "../src/index";
+import CanvasRuler from "easy-ruler";
+import "../src/components/canvasRuler.css";
 
 const options = {
-    mode: "auto",
-    scrollSelector: "#wrap",
+    mode: "translate",
+    // mountRef: document.getElementById("ruler"),
+    wrapperElement: document.getElementById("box"),
+    scrollElement: document.getElementById("wrap"),
     rulerId: "hh",
-    contentWidth: 30000,
-    contentHeight: 30000,
-    style: {
-        gap: 10,
-        size: 18,
-        mode: "center",
-    },
+    width: 30000,
+    height: 30000,
     onScroll: (x, y) => {
         console.log(x, y);
     },
 };
 
-(window as any).ruler = new CanvasRuler("box", options);
+(window as any).ruler = new CanvasRuler(options);
 
 // (window as any).ruler = CanvasRulerController.rulerMap[CanvasRulerController.currentRulerId];
 // let ruler = new CanvasRuler('box', options);

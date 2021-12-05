@@ -1,4 +1,4 @@
-/* canvasRuler最外层容器 */
+/* CanvasRuler最外层容器 */
 .canvas-ruler-wrapper .canvas-ruler-wrapper {
     position: absolute;
 }

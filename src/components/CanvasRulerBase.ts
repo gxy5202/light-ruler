@@ -42,7 +42,7 @@ export default abstract class CanvasRulerBase {
         const { options } = params;
 
         this.options = options;
-        this.style = options.style;
+        this.style = options.style as Required<RulerOuterStyle>;
         this.rulerId = options.rulerId as string;
         this.isInfinite = params.isInfinite;
         this.devicePixelRatio = window.devicePixelRatio;
@@ -56,10 +56,10 @@ export default abstract class CanvasRulerBase {
      */
     public getCanvas(): void {
         this.canvasX = document.getElementById(
-            `canvas-ruler-x${this.rulerId}`
+            `canvas-ruler-x-${this.rulerId}`
         ) as HTMLCanvasElement;
         this.canvasY = document.getElementById(
-            `canvas-ruler-y${this.rulerId}`
+            `canvas-ruler-y-${this.rulerId}`
         ) as HTMLCanvasElement;
 
         this.sizeX = {
@@ -178,9 +178,8 @@ export default abstract class CanvasRulerBase {
                 ? ctx.translate(-scrollNum + 0.5, 0)
                 : ctx.translate(0, -scrollNum + 0.5);
         } else {
-            ctx.translate(0.5, 0.5);
+            isHorizontal ? ctx.translate(0.5, 0.5) : ctx.translate(0, 0.5);
         }
-
         // 进行缩放和偏移，改善canvas模糊问题
         ctx.scale(this.devicePixelRatio, this.devicePixelRatio);
 
@@ -190,8 +189,8 @@ export default abstract class CanvasRulerBase {
         const textSize: number = fontSize
             ? fontSize
             : isHorizontal
-            ? Math.round(height * 0.55)
-            : Math.round(width * 0.55);
+            ? Math.round(height * 0.53)
+            : Math.round(width * 0.53);
         ctx.font = `${fontWeight} ${textSize}px sans-serif`;
         ctx.lineWidth = 1;
 
@@ -306,8 +305,18 @@ export default abstract class CanvasRulerBase {
      */
     public clearCanvas(): void {
         // 清空画布
-        this.ctxX.clearRect(0, 0, this.canvasX.width, this.canvasX.height);
-        this.ctxY.clearRect(0, 0, this.canvasY.width, this.canvasY.height);
+        this.ctxX.clearRect(
+            0,
+            0,
+            this.canvasX.width * this.devicePixelRatio,
+            this.canvasX.height * this.devicePixelRatio
+        );
+        this.ctxY.clearRect(
+            0,
+            0,
+            this.canvasY.width * this.devicePixelRatio,
+            this.canvasY.height * this.devicePixelRatio
+        );
     }
 
     /**

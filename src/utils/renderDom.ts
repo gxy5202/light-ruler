@@ -3,7 +3,7 @@
  * @Author: Gouxinyu
  * @Date: 2020-12-23 19:36:54
  */
-import { DomElement, RulerOuterStyle } from "../index.d";
+import { DomElement, RulerOuterStyle, UnitStyle } from "../index.d";
 
 /**
  * @description: 创建文档片段所需的HTML字符串
@@ -12,25 +12,33 @@ import { DomElement, RulerOuterStyle } from "../index.d";
  * @Date: 2020-12-25 17:19:36
  */
 export const createHTMLStringDom = (
-    styleObject: RulerOuterStyle,
+    styleObject: Required<RulerOuterStyle>,
     type: string
 ): string => {
     let rulerHTML: string;
 
-    const size =
-        styleObject.size > styleObject.maxSize
-            ? styleObject.maxSize
-            : styleObject.size;
-    const width =
-        styleObject.width > styleObject.maxWidth
-            ? styleObject.maxWidth
-            : styleObject.width;
-    const height =
-        styleObject.height > styleObject.maxHeight
-            ? styleObject.maxHeight
-            : styleObject.height;
+    const {
+        size: styleSize,
+        maxSize: styleMaxSize,
+        maxWidth: styleMaxWidth,
+        maxHeight: styleMaxHeight,
+        width: styleWidth,
+        height: styleHeight,
+        unit: styleUnit,
+        rulerId,
+        mountRef,
+    } = styleObject;
 
-    const canvasRulerWrapperStart: string = `<div id="canvas-ruler-wrapper${
+    const size =
+        (styleSize as number) > (styleMaxSize as number)
+            ? styleMaxSize
+            : styleSize;
+    const width =
+        styleWidth > (styleMaxWidth as number) ? styleMaxWidth : styleWidth;
+    const height =
+        styleHeight > (styleMaxHeight as number) ? styleMaxHeight : styleHeight;
+
+    const CanvasRulerWrapperStart: string = `<div id="canvas-ruler-wrapper-${
         styleObject.rulerId
     }" 
                                                 class="canvas-ruler-wrapper"
@@ -40,20 +48,22 @@ export const createHTMLStringDom = (
                                                         : "none"
                                                 }"
                                             >`;
-    const canvasRulerWrapperEnd: string = "</div>";
-    const canvasRulerWrapperContent: string = `
-        <div id="canvas-ruler-unit${styleObject.rulerId}" class="canvas-ruler-unit"
+    const CanvasRulerWrapperEnd: string = "</div>";
+    const CanvasRulerWrapperContent: string = `
+        <div id="canvas-ruler-unit-${rulerId}" class="canvas-ruler-unit"
                     style="
-                        width: ${styleObject.size}px;
-                        height: ${styleObject.size}px;
-                        background-color: ${styleObject.unit.backgroundColor};
-                        color: ${styleObject.unit.fontColor};
-                        font-size: ${styleObject.unit.fontSize}px;
+                        width: ${styleSize}px;
+                        height: ${styleSize}px;
+                        background-color: ${
+                            (styleUnit as UnitStyle).backgroundColor
+                        };
+                        color: ${(styleUnit as UnitStyle).fontColor};
+                        font-size: ${(styleUnit as UnitStyle).fontSize}px;
                         border-right: 1px solid ${styleObject.tickColor};
                         border-bottom: 1px solid ${styleObject.tickColor};
                         z-index: 99;
-                    ">${styleObject.unit.text}</div>
-                <div id="canvas-ruler-h-box${styleObject.rulerId}"
+                    ">${(styleUnit as UnitStyle).text}</div>
+                <div id="canvas-ruler-h-box-${rulerId}"
                     class="canvas-ruler-box canvas-ruler-h-box"
                     style="
                         width: ${width}px;
@@ -61,10 +71,10 @@ export const createHTMLStringDom = (
                         left: ${size}px;
                         border-bottom: 1px solid ${styleObject.backgroundColor}
                     ">
-                    <canvas id="canvas-ruler-x${styleObject.rulerId}" width=${width} height=${size} 
+                    <canvas id="canvas-ruler-x-${rulerId}" width=${width} height=${size} 
                      class="canvas-ruler-x">
                 </div>
-                <div id="canvas-ruler-v-box${styleObject.rulerId}"
+                <div id="canvas-ruler-v-box-${rulerId}"
                     class="canvas-ruler-box canvas-ruler-v-box" 
                     style="
                         width: ${size}px;
@@ -72,14 +82,16 @@ export const createHTMLStringDom = (
                         top: ${size}px;
                         border-right: 1px solid ${styleObject.backgroundColor}
                     ">
-                    <canvas id="canvas-ruler-y${styleObject.rulerId}" width=${size} height=${height} 
+                    <canvas id="canvas-ruler-y-${rulerId}" width=${size} height=${height} 
                     class="canvas-ruler-y">
                 </div>
     `;
     if (type === "range") {
-        rulerHTML = `${canvasRulerWrapperStart}${canvasRulerWrapperContent}${canvasRulerWrapperEnd}`;
+        rulerHTML = `${
+            mountRef ? "" : CanvasRulerWrapperStart
+        }${CanvasRulerWrapperContent}${CanvasRulerWrapperEnd}`;
     } else {
-        rulerHTML = canvasRulerWrapperContent;
+        rulerHTML = CanvasRulerWrapperContent;
     }
     return rulerHTML;
 };
@@ -94,7 +106,7 @@ export const createHTMLStringDom = (
 export const setDomAttribute = (target: HTMLElement, attr: any): void => {
     if (target === null) throw new Error("dom is null");
     Object.keys(attr).forEach((item) => {
-        target[item] = attr[item];
+        (target as any)[item] = attr[item];
     });
 };
 
@@ -136,13 +148,13 @@ export const checkBrowserSupport = (type: any): boolean => {
  */
 // eslint-disable-next-line max-len
 export const appendDom = (
-    fatherDom: DomElement = null,
-    ChildDom: DomElement = null
+    fatherDom: DomElement,
+    ChildDom: DomElement
 ): Promise<DomElement> =>
     new Promise((resolve, reject) => {
         if (fatherDom && ChildDom) {
             fatherDom.appendChild(ChildDom);
-            resolve(ChildDom);
+            resolve(fatherDom);
         }
         reject(new Error("dom is null"));
     });
@@ -153,21 +165,39 @@ export const appendDom = (
  * @param {any} styleObject
  * @Date: 2021-01-11 11:40:29
  */
-export const createFragmentDom = (styleObject: RulerOuterStyle): void => {
+export const createFragmentDom = (
+    styleObject: Required<RulerOuterStyle>
+): void => {
+    const { wrapperElement, mountRef } = styleObject;
     // 若浏览器不支持，则使用文档片段在内存中创建dom，不会引起页面回流createDocumentFragment
     const fragment = document.createDocumentFragment();
-    const canvasRulerWrapper = createHTMLDom("div", {
-        id: `canvas-ruler-wrapper${styleObject.rulerId}`,
-        className: "canvas-ruler-wrapper",
-    });
+
+    let canvasRulerWrapper;
+
+    if (mountRef) {
+        setDomAttribute(mountRef, {
+            id: `canvas-ruler-wrapper-${styleObject.rulerId}`,
+            className: "canvas-ruler-wrapper",
+            style: `display: ${styleObject.show ? "block" : "none"}`,
+        });
+        canvasRulerWrapper = mountRef;
+    } else {
+        canvasRulerWrapper = createHTMLDom("div", {
+            id: `canvas-ruler-wrapper-${styleObject.rulerId}`,
+            className: "canvas-ruler-wrapper",
+            style: `display: ${styleObject.show ? "block" : "none"}`,
+        });
+    }
 
     const rulerHTML: string = createHTMLStringDom(styleObject, "html");
     canvasRulerWrapper.innerHTML = rulerHTML;
     fragment.appendChild(canvasRulerWrapper);
-    const wrapperElement: HTMLElement = document.getElementById(
-        styleObject.wrapperId
-    );
-    appendDom(wrapperElement, fragment).then((dom) => {});
+    const wrapperEl: HTMLElement = mountRef
+        ? mountRef.parentElement
+        : typeof wrapperElement === "string"
+        ? (document.getElementById(wrapperElement) as HTMLElement)
+        : wrapperElement;
+    appendDom(wrapperEl, fragment).then((dom) => {});
 };
 
 /**
@@ -176,24 +206,41 @@ export const createFragmentDom = (styleObject: RulerOuterStyle): void => {
  * @param {any} styleObject
  * @Date: 2021-01-11 11:39:45
  */
-export const createRangeDom = (styleObject: RulerOuterStyle): void => {
+export const createRangeDom = (
+    styleObject: Required<RulerOuterStyle>
+): void => {
     // 选择文档片段
     let range: Range = document.createRange();
+    const { wrapperElement, mountRef } = styleObject;
     // IE11不兼容createContextualFragment方法，但兼容createRange方法
     if (checkBrowserSupport(range.createContextualFragment)) {
         // 若浏览器支持，则进行字符串一次性插入DOM元素
         const rulerHTML: string = createHTMLStringDom(styleObject, "range");
-        const wrapperElement: HTMLElement = document.getElementById(
-            styleObject.wrapperId
-        );
-        range.selectNode(wrapperElement);
+        if (mountRef) {
+            setDomAttribute(mountRef, {
+                id: `canvas-ruler-wrapper-${styleObject.rulerId}`,
+                className: "canvas-ruler-wrapper",
+                style: `display: ${styleObject.show ? "block" : "none"}`,
+            });
+        }
+        const wrapperEl: HTMLElement = mountRef
+            ? mountRef.parentElement
+            : typeof wrapperElement === "string"
+            ? (document.querySelector(wrapperElement) as HTMLElement)
+            : wrapperElement;
+        range.selectNode(wrapperEl);
         const documentFragment = range.createContextualFragment(rulerHTML);
         // 保证DOM添加完成之后再获取页面上的元素
-        appendDom(wrapperElement, documentFragment).then((dom) => {});
+        if (mountRef) {
+            appendDom(mountRef, documentFragment).then((dom) => {
+                appendDom(wrapperEl, dom);
+            });
+        } else {
+            appendDom(wrapperEl, documentFragment);
+        }
     } else {
         // 释放片段
         range.detach();
-        range = null;
         // 文档碎片创建DOM
         createFragmentDom(styleObject);
     }
@@ -205,7 +252,7 @@ export const createRangeDom = (styleObject: RulerOuterStyle): void => {
  * @param {any} styleObject
  * @Date: 2021-01-11 11:39:45
  */
-export const renderDom = (styleObject: RulerOuterStyle): void => {
+export const renderDom = (styleObject: Required<RulerOuterStyle>): void => {
     // 判断浏览器支持方法情况，选择效率最优的插入DOM方案，进行兼容处理
     if (checkBrowserSupport(document.createRange)) {
         createRangeDom(styleObject);

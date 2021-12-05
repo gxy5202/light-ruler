@@ -6,5 +6,6 @@
 // vite.config.js
 export default {
     // 配置选项
-    root: './demo'
+    root: './demo',
+    server: { port: '8000', } // 默认是 3000 端口
 }
