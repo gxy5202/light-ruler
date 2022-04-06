@@ -42,3 +42,25 @@
 .canvas-ruler-wrapper .canvas-ruler-box {
     will-change: transform;
 }
+
+.light-ruler-line {
+    height: 100%;
+    animation: lineBlink 1s linear infinite;
+}
+
+.ligth-ruler-line-disable {
+    pointer-events: none;
+}
+@keyframes lineBlink {
+    0% {
+        opacity: 1;
+    }
+
+    50% {
+        opacity: 0.3;
+    }
+
+    100% {
+        opacity: 1;
+    }
+}

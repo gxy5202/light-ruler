@@ -3,10 +3,10 @@
  * @Author: Gouxinyu
  * @Date: 2020-12-23 11:14:11
  */
-import LightRuler from "light-ruler";
+import LightRuler from "../src/components/CanvasRuler";
 
 const options = {
-    mode: "translate",
+    mode: "infinite",
     // mountRef: document.getElementById("ruler"),
     wrapperElement: document.getElementById("box"),
     scrollElement: document.getElementById("wrap"),
@@ -14,7 +14,7 @@ const options = {
     width: 30000,
     height: 30000,
     onScroll: (x, y) => {
-        console.log(x, y);
+        // console.log(x, y);
     },
 };
 

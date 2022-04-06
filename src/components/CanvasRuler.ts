@@ -26,9 +26,10 @@ import getComputedStyle from "../utils/getComputedStyle";
 import { renderDom } from "../utils/renderDom";
 import ScreenCanvasRuler from "./ScreenCanvasRuler";
 import CanvasRulerBase from "./CanvasRulerBase";
+import Line from "./Line";
 import { events } from "../utils/events";
 import throwCustomError from "../utils/CustomError";
-import "./canvasRuler.css?url";
+import "./canvasRuler.css";
 
 /**
  * @description: ruler类
@@ -72,6 +73,8 @@ export default class CanvasRuler {
         this.createCanvasInnerRuler();
         // 绑定事件
         this.bindScrollEvent();
+        // 线
+        Line.addEvent();
     }
 
     /**
@@ -432,6 +435,8 @@ export default class CanvasRuler {
             (this.canvas as CanvasRulerBase).scrollLeft = scrollLeft;
             (this.canvas as CanvasRulerBase).scrollTop = scrollTop;
             this.canvas.translateRuler(scrollLeft, scrollTop);
+            Line.moveVLine(scrollLeft);
+            Line.moveHLine(scrollTop);
             events.locked = false;
         });
     }

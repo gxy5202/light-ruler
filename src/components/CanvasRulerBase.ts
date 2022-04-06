@@ -297,6 +297,183 @@ export default abstract class CanvasRulerBase {
         ctx.restore();
     }
 
+    public drawV(
+        ctx: CanvasRenderingContext2D,
+        type: "horizontal" | "vertical",
+        scrollNum: number = 0
+    ): void {
+        const isHorizontal = true;
+        const width = isHorizontal
+            ? this.sizeX.width + scrollNum
+            : this.sizeY.width;
+
+        const height = isHorizontal
+            ? this.sizeX.height
+            : this.sizeY.height + scrollNum;
+
+        const {
+            gap,
+            backgroundColor,
+            tickColor,
+            fontColor,
+            fontWeight,
+            fontSize,
+            scale,
+            mode,
+        }: {
+            gap: number;
+            backgroundColor: string;
+            fontSize: number;
+            tickColor: string;
+            fontColor: string;
+            fontWeight: string | number;
+            scale: number;
+            mode: string;
+        } = this.style as any;
+
+        // 根据每格间距计算需要画多少个
+        const num = isHorizontal ? width / gap : height / gap;
+
+        // 起点和终点
+        let startPoint = 0;
+        const endPoint = 0;
+
+        ctx.rect(
+            0,
+            0,
+            width * this.devicePixelRatio,
+            height * this.devicePixelRatio
+        );
+        ctx.fillStyle = backgroundColor as string;
+        ctx.fill();
+
+        ctx.save();
+
+        // 根据滚动数值进行相应比例下的位移, 无限生成canvas关键方法
+        if (this.isInfinite) {
+            isHorizontal
+                ? ctx.translate(-scrollNum + 0.5, 0)
+                : ctx.translate(0, -scrollNum + 0.5);
+        } else {
+            isHorizontal ? ctx.translate(0.5, 0.5) : ctx.translate(0, 0.5);
+        }
+        // 进行缩放和偏移，改善canvas模糊问题
+        ctx.scale(this.devicePixelRatio, this.devicePixelRatio);
+        // ctx.rotate(90);
+        ctx.textBaseline = "alphabetic";
+        ctx.strokeStyle = tickColor as string;
+        ctx.fillStyle = fontColor as string;
+        const textSize: number = fontSize
+            ? fontSize
+            : isHorizontal
+            ? Math.round(height * 0.53)
+            : Math.round(width * 0.53);
+        ctx.font = `${fontWeight} ${textSize}px sans-serif`;
+        ctx.lineWidth = 1;
+
+        const isCenterMode = mode === "center";
+        // 开始绘图
+        ctx.beginPath();
+        for (let i = -(Math.round(startPoint) / gap); i < num; i++) {
+            if (i % gap === 0) {
+                const textNumber = Math.round((i / scale) * gap);
+                if (type === "vertical") {
+                    // 纵向标尺文字竖向显示
+                    let stickTextArr: string[] = [];
+                    const stick: number = textNumber;
+                    // 文字拆分换行
+                    const stickString: string = stick.toString();
+                    stickTextArr = stickString.split("");
+                    // 增量步长
+                    let increment = 0;
+                    for (let x = 0; x < stickTextArr.length; x++) {
+                        // 换算成px
+                        const tx =
+                            textNumber === 0 && isCenterMode
+                                ? ""
+                                : stickTextArr[x];
+                        ctx.fillText(
+                            tx,
+                            width * 0.1,
+                            isCenterMode
+                                ? startPoint + increment - width * 0.5
+                                : startPoint + increment + width * 0.7
+                        );
+
+                        increment += textSize;
+                    }
+                } else {
+                    // 换算成px
+                    const tx =
+                        textNumber === 0 && isCenterMode ? "" : `${textNumber}`;
+                    const tw = ctx.measureText(String(textNumber)).width;
+                    ctx.fillText(
+                        tx,
+                        isCenterMode
+                            ? startPoint - tw * 0.5
+                            : startPoint + height * 0.2,
+                        height * 0.5
+                    );
+                }
+            }
+
+            if (isHorizontal) {
+                ctx.moveTo(startPoint, height);
+                if (i % gap === 0) {
+                    ctx.lineTo(
+                        startPoint,
+                        isCenterMode
+                            ? Math.round(endPoint + height / 1.5)
+                            : Math.round(endPoint)
+                    );
+                } else if (i % (gap / 2) === 0) {
+                    ctx.lineTo(
+                        startPoint,
+                        isCenterMode
+                            ? Math.round(endPoint + height / 1.5)
+                            : Math.round(endPoint + height / 2)
+                    );
+                } else {
+                    ctx.lineTo(
+                        startPoint,
+                        isCenterMode
+                            ? Math.round(endPoint + height / 1.2)
+                            : Math.round(endPoint + height / 1.5)
+                    );
+                }
+            } else {
+                ctx.moveTo(width, startPoint);
+                if (i % gap === 0) {
+                    ctx.lineTo(
+                        isCenterMode
+                            ? Math.round(width / 1.5)
+                            : Math.round(-width),
+                        startPoint
+                    );
+                } else if (i % (gap / 2) === 0) {
+                    ctx.lineTo(
+                        isCenterMode
+                            ? Math.round(width / 1.5)
+                            : Math.round(width / 2),
+                        startPoint
+                    );
+                } else {
+                    ctx.lineTo(
+                        isCenterMode
+                            ? Math.round(width / 1.2)
+                            : Math.round(width / 1.5),
+                        startPoint
+                    );
+                }
+            }
+
+            startPoint += gap;
+        }
+
+        ctx.stroke();
+        ctx.restore();
+    }
+
     /**
      * @description: 清空画布
      * @Author: Gouxinyu
