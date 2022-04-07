@@ -1,5 +1,5 @@
 /*
- * @description:
+ * @description: 测试线功能代码，需要重新组织
  * @Author: Gouxinyu
  * @Date: 2021-12-21 23:20:35
  */
@@ -164,7 +164,7 @@ export default class Line {
                 );
 
                 const moveEvent = (ev) => {
-                    const { pageY } = ev;
+                    const { layerY, path } = ev;
 
                     allVLines.forEach((v) => {
                         v.classList.add("ligth-ruler-line-disable");
@@ -174,7 +174,20 @@ export default class Line {
                         v.classList.add("ligth-ruler-line-disable");
                     });
 
-                    lineText.style.transform = `translateY(${pageY}px)`;
+                    // 若是标尺内
+                    if (
+                        path.some((v) =>
+                            v.id?.includes("canvas-ruler-h-box-hh")
+                        )
+                    ) {
+                        console.log("in", layerY);
+                        lineText.style.transform = `translateX(${layerY}px)`;
+                    } else {
+                        console.log("out", layerY);
+                        lineText.style.transform = `translateX(${
+                            20 + layerY
+                        }px)`;
+                    }
                 };
 
                 const upEvent = (ev) => {
