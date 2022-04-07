@@ -1,0 +1,96 @@
+<!--
+ * @description: 
+ * @Author: Gouxinyu
+ * @Date: 2020-12-23 11:14:43
+-->
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>CanvasRuler</title>
+        <style>
+            html,
+            body {
+                padding: 0;
+                margin: 0 !important;
+            }
+
+            #box {
+                width: 1200px;
+                height: 600px;
+                overflow: hidden;
+                background: gray;
+                position: relative;
+                left: 300px;
+            }
+
+            #wrap {
+                position: absolute;
+                left: 20px;
+                top: 20px;
+                width: 1180px;
+                height: 580px;
+                overflow: auto;
+            }
+
+            #inner-wrap {
+                width: 30000px;
+                height: 30000px;
+            }
+
+            .img-mask {
+                width: 220px;
+                height: 220px;
+                position: absolute;
+                left: 20px;
+                border-radius: 50%;
+                background-color: rgba(16, 16, 16, 0.3);
+                backdrop-filter: blur(8px);
+                -webkit-backdrop-filter: blur(8px);
+            }
+
+            .my-img {
+                display: block;
+                object-fit: cover;
+                margin: 20px;
+                border-radius: 50%;
+            }
+
+            .img-box {
+                animation: show 0.5s ease-in-out;
+            }
+
+            @keyframes show {
+                0% {
+                    transform: translateY(-30px);
+                    opacity: 0;
+                }
+
+                100% {
+                    transform: translateY(0);
+                    opacity: 1;
+                }
+            }
+        </style>
+    </head>
+
+    <body>
+        <div id="box">
+            <div id="wrap">
+                <div id="inner-wrap"></div>
+            </div>
+            <div id="ruler"></div>
+        </div>
+        <input id="scale" type="text" />
+        <button id="close">清除实例</button>
+        <button id="bg">背景颜色</button>
+        <button id="fontColor">文字颜色</button>
+        <button id="tickColor">线条颜色</button>
+        <button id="resizeBig">8万分辨率</button>
+        <button id="resizeSmall">8192分辨率</button>
+        <button id="resizeHuge">50万分辨率</button>
+
+        <script type="module" src="./main.ts"></script>
+    </body>
+</html>
