@@ -11,12 +11,12 @@ PS: This project was accomplished by refering to daybrush's project and I would 
 
 ### 主要特性(Features)
 
--   使用 canvas 绘制，支持无限滚动，不会生成多个 DOM 和引起页面重绘
--   支持自定义标尺背景色、文字色、刻度色以及单位
--   支持 translate 模式，即首次 canvas 绘制标尺后，滚动通过 css transform 实现
--   使用 Typescript 编写，不依赖任何第三方库，打包后文件仅有 26kb(包含样式)
--   支持缩放刻度值
--   目前提供 2 种标尺主题样式
+-   useing canvas. 使用 canvas 绘制，支持无限滚动，不会生成多个 DOM 和引起页面重绘
+-   support custom style. 支持自定义标尺背景色、文字色、刻度色以及单位
+-   support css3 translate. 支持 translate 模式，即首次 canvas 绘制标尺后，滚动通过 css transform 实现
+-   write by typescript. 使用 Typescript 编写，不依赖任何第三方库，打包后文件仅有 26kb(包含样式)
+-   support scale. 支持缩放刻度值
+-   support two themes. 目前提供 2 种标尺主题样式
 -   提供多实例控制器，可管理多个标尺实例
 
 ### 安装(Installation)
