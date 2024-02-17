@@ -2,7 +2,7 @@
 
 [![oBz0Qe.png](https://s4.ax1x.com/2021/12/05/oBz0Qe.png)](https://imgtu.com/i/oBz0Qe)
 
-![](https://img.shields.io/github/stars/gxy5202/light-ruler) ![](https://img.shields.io/github/package-json/v/gxy5202/light-ruler) ![](https://img.shields.io/github/v/release/gxy5202/light-ruler?display_name=tag&include_prereleases&sort=semver)
+![](https://img.shields.io/github/stars/gxy5202/light-ruler) ![](https://img.shields.io/github/package-json/v/gxy5202/light-ruler)
 
 [DEMO](https://www.gomi.site/LightRuler "DEMO") / [Github](https://github.com/gxy5202/light-ruler "Github")
 
